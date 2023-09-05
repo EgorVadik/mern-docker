@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  mongodb:
+    image: "mongo"
+    ports:
+      - 27017:27017
+    volumes:
+      - todos:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: admin
+
+  server:
+    build: ./server
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    environment:
+      MONGODB_USERNAME: root
+      MONGODB_PASSWORD: admin
+      CORS_ORIGIN: http://localhost:5173
+    depends_on:
+      - mongodb
+      
+  client:
+    build: ./client
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client/src:/app/src
+    stdin_open: true
+    tty: true
+    depends_on:
+      - server
+
+volumes:
+  todos:
+
+# change vite.config.ts
+# add cors
+ 
